@@ -1,79 +1,115 @@
-# 🛡️ Mitigating Attacks by Creating Rules Using Snort
+# 🛡️ Mitigating Attacks with Snort – IDS Challenge Lab
 
-This project demonstrates how to detect and mitigate live attacks using Snort, based on the TryHackMe Snort Challenge – Live Attacks. The challenge involves analyzing network traffic to identify malicious activities and crafting custom Snort rules to prevent them.
+![null](THM-CLI.webp) <!-- Replace with a better cover image if available -->
 
-## 🔧 Tools & Technologies
+---
 
-- Snort
-- Wireshark
-- TryHackMe Platform
+## 📘 Introduction
 
-## 📚 Scenarios Covered
+This project showcases the deployment of Snort, a powerful open-source intrusion detection system (IDS), in a simulated lab environment. The challenge is based on TryHackMe’s Snort Challenge, where live attacks are detected and mitigated using custom rules. This exercise strengthens foundational Blue Team skills in traffic analysis, signature-based detection, and response.
 
-### Scenario 1: Brute-Force Attack
+---
 
-- **Objective**: Detect and block SSH brute-force attempts.
-- **Approach**:
-  - Ran Snort in sniffer mode to capture traffic.
-  - Identified repeated SSH login attempts from a specific IP.
-  - Created a custom Snort rule to alert on multiple failed SSH login attempts.
-  - Switched Snort to IPS mode to block the malicious IP.
+## 🎯 Objectives
 
-![Brute-Force Detection](images/scenario1-brute-force.png)
+* Set up and configure Snort in a virtual environment
+* Analyze malicious traffic patterns using `tcpdump` and `pcap` files
+* Write Snort rules to detect and respond to attacks
+* Test and validate rule effectiveness with simulated threats
 
-### Scenario 2: Reverse Shell Attack
+---
 
-- **Objective**: Detect and block reverse shell connections.
-- **Approach**:
-  - Monitored outbound traffic for unusual connections.
-  - Detected traffic on port 4444, commonly used for reverse shells.
-  - Crafted a Snort rule to alert on outbound connections to port 4444.
-  - Implemented the rule in IPS mode to prevent the reverse shell.
+## 🧰 Tools & Technologies
 
-![Reverse Shell Detection](images/scenario2-reverse-shell.png)
+| Tool/Service | Purpose                     |
+| ------------ | --------------------------- |
+| Snort        | Intrusion detection system  |
+| Wireshark    | Packet analysis             |
+| TryHackMe    | Snort Challenge environment |
+| Ubuntu VM    | Host for IDS deployment     |
 
-## 📁 Project Structure
+---
 
-- `rules/local.rules`: Custom Snort rules for detecting specific attack patterns.
-- `logs/`: Contains Snort log files generated during analysis.
-- `images/`: Screenshots illustrating detection and mitigation steps.
-- `walkthrough/THM-Snort-Challenge-Walkthrough.md`: Detailed walkthrough of the challenge and solutions.
+## 🧪 Lab Setup
 
-## 📖 References
+### ✅ Step 1: Access the TryHackMe Room
 
-- [TryHackMe: Snort Challenge – Live Attacks](https://tryhackme.com/room/snortchallenges2)
-- [Jasper Alblas' Walkthrough](https://www.jalblas.com/blog/thm-snort-challenge-live-attacks-walkthrough/)
+1. Navigate to the [Snort Challenge - Live Attacks](https://tryhackme.com/room/snortchallenge) on TryHackMe.
+2. Deploy the attack and target machines.
+
+---
+
+### ✅ Step 2: Install Snort
+
+```bash
+sudo apt update
+sudo apt install snort
+```
+
+* Configure the interface and HOME\_NET settings in `/etc/snort/snort.conf`.
+
+---
+
+### ✅ Step 3: Analyze Malicious Traffic
+
+Use tools like Wireshark or tcpdump to inspect traffic:
+
+```bash
+tcpdump -i eth0 -nn
+```
+
+Identify suspicious patterns such as excessive HTTP requests or scanning behavior.
+
+---
+
+### ✅ Step 4: Write and Test Snort Rules
+
+Example rule to detect Nmap scans:
+
+```bash
+alert tcp any any -> any any (msg:"Nmap Scan Detected"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:1000001;)
+```
+
+* Save rule in local.rules and restart Snort:
+
+```bash
+sudo snort -A console -q -c /etc/snort/snort.conf -i eth0
 ```
 
 ---
 
-## 🖼️ Images
+### ✅ Step 5: Mitigate via Alerts or RESP
 
-Ensure you include relevant screenshots in the `images/` directory:
-
-* `scenario1-brute-force.png`: Screenshot showing Snort alerting on SSH brute-force attempts.
-* `scenario2-reverse-shell.png`: Screenshot displaying detection of reverse shell activity.
+Extend rules to block or log based on specific attack signatures (e.g., web shell upload or RFI detection).
 
 ---
 
-## 🛠️ Snort Rules (`rules/local.rules`)
+## 📸 Screenshots
 
-```snort
-# Rule to detect SSH brute-force attempts
-alert tcp any any -> any 22 (msg:"SSH Brute-Force Attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:1000001; rev:1;)
-
-# Rule to detect reverse shell connections on port 4444
-alert tcp any any -> any 4444 (msg:"Potential Reverse Shell Detected"; sid:1000002; rev:1;)
-```
+| Description                  | Screenshot                        |
+| ---------------------------- | --------------------------------- |
+| Snort detecting Nmap scan    | ![Scan Detected](snort-nmap.png)  |
+| Custom Snort rule match      | ![Rule Match](snort-rule.png)     |
+| Traffic capture in Wireshark | ![Traffic Capture](wireshark.png) |
 
 ---
 
-## 📄 Walkthrough
+## ✅ Key Takeaways
 
-Create a detailed walkthrough in `walkthrough/THM-Snort-Challenge-Walkthrough.md` outlining:
+* ✅ Learned how to configure and deploy Snort IDS
+* ✅ Practiced writing effective Snort rules
+* ✅ Detected and analyzed live attack patterns
+* ✅ Strengthened Blue Team incident response skills
 
-* Steps taken to identify each attack.
-* Commands used to run Snort in different modes.
-* Analysis of captured traffic.
-* Creation and testing of custom rules.
-* Transition from detection to prevention.
+---
+
+## 📎 References
+
+* [TryHackMe Snort Challenge Walkthrough](https://www.jalblas.com/blog/thm-snort-challenge-live-attacks-walkthrough/)
+* [Snort Documentation](https://www.snort.org/documents)
+
+---
+
+## 📬 About Me
+
+👋 I'm **Zee**, a cybersecurity enthusiast focused on defensive security, incident response, and simulating real-world threats. This lab deepened my hands-on knowledge of intrusion detection and packet analysis using Snort.
